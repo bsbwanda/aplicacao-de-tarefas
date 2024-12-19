@@ -1,0 +1,32 @@
+import React, { useContext, useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { PokemonContext } from '../context/PokemonContext';
+
+const PokemonDetails = () => {
+  const { pokemons, addToCart } = useContext(PokemonContext);
+  const { id } = useParams();
+  const [pokemonDetails, setPokemonDetails] = useState(null);
+
+  useEffect(() => {
+    const fetchDetails = async () => {
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+      const data = await res.json();
+      setPokemonDetails(data);
+    };
+
+    fetchDetails();
+  }, [id]);
+
+  if (!pokemonDetails) return <div>Carregando...</div>;
+
+  return (
+    <div>
+      <h1>{pokemonDetails.name}</h1>
+      <img src={pokemonDetails.sprites.front_default} alt={pokemonDetails.name} />
+      <p>Habilidades: {pokemonDetails.abilities.map(a => a.ability.name).join(', ')}</p>
+      <button onClick={() => addToCart(pokemonDetails)}>Adicionar ao Carrinho</button>
+    </div>
+  );
+};
+
+export default PokemonDetails;
